@@ -203,6 +203,7 @@ void aoaControlUpdate(float *pidPitchOutput, float rateError, float newPTerm, fl
 
     if (aoaControlConfig()->fw_aoa_aircraft_type == AIRCRAFT_CANARD) {
 
+
         const float thresholdRatio = aoaControlConfig()->fw_aoa_intervention_threshold * 0.01f;
         const int16_t upperThreshold = upperLimitAngle * thresholdRatio;
         const int16_t lowerThreshold = lowerLimitAngle * thresholdRatio;
