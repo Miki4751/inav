@@ -186,7 +186,7 @@ bool aoaControlEnable(int8_t input_rc_channel)
     return rcValue > 1666;
 }
 
-void aoaControlUpdate(float *pidPitchOutput, float rateError, float newPTerm, float newDTerm, float newFFTerm, float errorGyroIf, float limit)
+void aoaControlUpdate(int16_t *pidPitchOutput, float rateError, float newPTerm, float newDTerm, float newFFTerm, float errorGyroIf, float limit)
 {
     isAoaControlEnabled = aoaControlEnable(aoaControlConfig()->fw_aoa_control_channel);
     
@@ -210,7 +210,7 @@ void aoaControlUpdate(float *pidPitchOutput, float rateError, float newPTerm, fl
 
         const int16_t lowerLimit = lowerLimitAngle * deg2pwm;
         const int16_t upperLimit = upperLimitAngle * deg2pwm;
-        float constrainedPidOutput = constrainf(*pidPitchOutput, -upperLimit, -lowerLimit);
+        int16_t constrainedPidOutput = constrain(*pidPitchOutput, -upperLimit, -lowerLimit);
 
         float aoaError = 0.0f;
         if (aoaDeg > upperThreshold) {
