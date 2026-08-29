@@ -2452,7 +2452,7 @@ static bool osdDrawSingleElement(uint8_t item)
                 buff[1] = '-';
                 buff[2] = '-';
             } else {
-                osdFormatDistanceSymbol(buff, range, 1, 3);
+                osdFormatDistanceSymbol(buff, range, 2, 4);
             }
         }
         break;
