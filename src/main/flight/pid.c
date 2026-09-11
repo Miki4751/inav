@@ -837,10 +837,14 @@ static void iTermLockApply(pidState_t *pidState, const float rateTarget, const f
     pidState->attenuation.aP = dampingFactor;
     pidState->attenuation.aD = dampingFactor;
 
-    // Bounceback detection: error sign change with minimum interval to prevent rapid reversal
+    // Bounceback detection: error sign change with minimum interval to prevent rapid reversal.
+    // Only treat sign changes at significant error magnitude as bounceback (fast stick release overshoot).
+    // Small error zero-crossings (sensor noise, turbulence, steady-state trim errors) must not slam the I-term,
+    // otherwise the integrator can never build up to cancel constant airframe disturbances.
     int8_t currentErrorSign = (rateError > 0) ? 1 : -1;
     if (pidState->attenuation.lastErrorSign != 0 &&
         currentErrorSign != pidState->attenuation.lastErrorSign &&
+        fabsf(rateError) > maxRate * pidProfile()->fwItermLockEngageThreshold / 100.0f &&
         (millis() - pidState->attenuation.stickReturnTimeMs) >= ATTENUATION_SIGN_CHANGE_MIN_INTERVAL_MS) {
         pidState->errorGyroIf *= -0.2f;
         pidState->attenuation.stickReturnTimeMs = millis();
@@ -880,7 +884,7 @@ static void NOINLINE pidApplyFixedWingRateController(pidState_t *pidState, float
 
 #ifdef USE_AOA
     if (pidState->axis == FD_PITCH) {
-        aoaControlUpdate(&axisPID[FD_PITCH], rateError, newPTerm, newDTerm, newFFTerm, pidState->errorGyroIf, limit);
+        aoaControlUpdate(&axisPID[FD_PITCH], rateError, limit);
     }
 #endif
 
